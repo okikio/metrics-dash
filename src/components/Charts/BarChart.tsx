@@ -7,7 +7,7 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from "chart.js";
 import { ChartData } from "@/lib/types";
 
@@ -25,28 +25,28 @@ const options = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      position: 'top' as const,
+      position: "top" as const,
     },
   },
   scales: {
     y: {
       beginAtZero: true,
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)',
+        color: "rgba(255, 255, 255, 0.1)",
       },
       ticks: {
-        color: 'rgba(255, 255, 255, 0.8)',
-      }
+        color: "rgba(255, 255, 255, 0.8)",
+      },
     },
     x: {
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)',
+        color: "rgba(255, 255, 255, 0.1)",
       },
       ticks: {
-        color: 'rgba(255, 255, 255, 0.8)',
-      }
-    }
-  }
+        color: "rgba(255, 255, 255, 0.8)",
+      },
+    },
+  },
 };
 
 interface BarChartProps {

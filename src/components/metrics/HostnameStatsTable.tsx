@@ -29,7 +29,7 @@ export function HostnameStatsTable({ metrics }: HostnameStatsTableProps) {
     .filter((m) => m.name === "mw_provider_hostname_count")
     .map((m) => ({
       hostname: m.labels?.hostname || "unknown",
-      count: m.value
+      count: m.value,
     }))
     .sort((a, b) => b.count - a.count);
 
@@ -37,9 +37,9 @@ export function HostnameStatsTable({ metrics }: HostnameStatsTableProps) {
   const totalRequests = hostStats.reduce((acc, curr) => acc + curr.count, 0);
 
   // Add percentage to each stat
-  const statsWithPercentage: HostStats[] = hostStats.map(stat => ({
+  const statsWithPercentage: HostStats[] = hostStats.map((stat) => ({
     ...stat,
-    percentage: (stat.count / totalRequests) * 100
+    percentage: (stat.count / totalRequests) * 100,
   }));
 
   return (
@@ -56,9 +56,7 @@ export function HostnameStatsTable({ metrics }: HostnameStatsTableProps) {
           <TableBody>
             {statsWithPercentage.map((stat) => (
               <TableRow key={stat.hostname}>
-                <TableCell className="font-medium">
-                  {stat.hostname}
-                </TableCell>
+                <TableCell className="font-medium">{stat.hostname}</TableCell>
                 <TableCell className="text-right">
                   {formatNumber(stat.count)}
                 </TableCell>

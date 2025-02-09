@@ -1,4 +1,4 @@
-import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+import { ScrollToTopButton } from "@/components/ui/ScrollToTopButton";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

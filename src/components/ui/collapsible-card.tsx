@@ -9,22 +9,21 @@ interface CollapsibleCardProps {
   defaultExpanded?: boolean;
 }
 
-export function CollapsibleCard({ 
-  title, 
-  children, 
-  defaultExpanded = true 
+export function CollapsibleCard({
+  title,
+  children,
+  defaultExpanded = true,
 }: CollapsibleCardProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+      <CardHeader
+        className="flex flex-row items-center justify-between space-y-0"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
         <CardTitle>{title}</CardTitle>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
+        <Button variant="ghost" size="icon">
           {isExpanded ? <ChevronUp /> : <ChevronDown />}
         </Button>
       </CardHeader>

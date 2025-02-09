@@ -53,7 +53,8 @@ export function ProviderStatusTable({ metrics }: ProviderStatusTableProps) {
       // Using type assertion to handle the dynamic status field
       (acc[providerId] as any)[status] = value;
       acc[providerId].total += value;
-      acc[providerId].successRate = (acc[providerId].success / acc[providerId].total) * 100;
+      acc[providerId].successRate =
+        (acc[providerId].success / acc[providerId].total) * 100;
 
       return acc;
     }, {} as Record<string, ProviderStats>);
@@ -61,7 +62,7 @@ export function ProviderStatusTable({ metrics }: ProviderStatusTableProps) {
   // Convert to array and sort by total requests
   const sortedStats = Object.values(providerStats)
     .sort((a, b) => b.total - a.total)
-    .filter(stat => 
+    .filter((stat) =>
       stat.provider.toLowerCase().includes(searchTerm.toLowerCase())
     );
 

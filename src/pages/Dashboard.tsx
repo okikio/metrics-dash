@@ -132,8 +132,8 @@ export default function Dashboard() {
             .filter((m) => m.name === "http_request_duration_seconds_count")
             .slice(0, 10)
             .map((m) => m.value),
-          backgroundColor: "rgba(54, 162, 235, 0.8)",
-        },
+            backgroundColor: ["rgba(54, 162, 235, 0.8)"],
+          },
       ],
     };
 
@@ -182,7 +182,7 @@ export default function Dashboard() {
         {
           label: "Failure Rate (%)",
           data: providerFailureRates.map((p) => parseFloat(p.failureRate.toFixed(1))),
-          backgroundColor: "rgba(239, 68, 68, 0.8)",
+          backgroundColor: providerFailureRates.map(() => "rgba(239, 68, 68, 0.8)"),
         },
       ],
     };
@@ -228,8 +228,8 @@ export default function Dashboard() {
           .map(([_, { sum, count }]) => (sum / count) * 1000)
           .sort((a, b) => b - a)
           .slice(0, 10),
-        backgroundColor: 'rgba(234, 179, 8, 0.8)',
-      }]
+          backgroundColor: ["rgba(234, 179, 8, 0.8)"],
+        }]
     };
 
     return {

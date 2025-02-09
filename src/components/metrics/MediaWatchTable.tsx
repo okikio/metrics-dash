@@ -62,15 +62,17 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
 
       // Find if there's already an attempt with this provider
       const existingAttempt = acc[tmdbId].attempts.find(
-        a => a.providerId === providerId
+        (a) => a.providerId === providerId
       );
 
       if (existingAttempt) {
         // Update existing attempt
         if (success) {
-          existingAttempt.successCount = (existingAttempt.successCount || 0) + count;
+          existingAttempt.successCount =
+            (existingAttempt.successCount || 0) + count;
         } else {
-          existingAttempt.failureCount = (existingAttempt.failureCount || 0) + count;
+          existingAttempt.failureCount =
+            (existingAttempt.failureCount || 0) + count;
         }
         existingAttempt.count += count;
       } else {
@@ -87,9 +89,12 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
       acc[tmdbId].totalCount += count;
 
       // Recalculate success rate
-      const successfulAttempts = acc[tmdbId].attempts
-        .reduce((sum, a) => sum + (a.successCount || 0), 0);
-      acc[tmdbId].successRate = (successfulAttempts / acc[tmdbId].totalCount) * 100;
+      const successfulAttempts = acc[tmdbId].attempts.reduce(
+        (sum, a) => sum + (a.successCount || 0),
+        0
+      );
+      acc[tmdbId].successRate =
+        (successfulAttempts / acc[tmdbId].totalCount) * 100;
 
       return acc;
     }, {} as Record<string, MediaStats>);
@@ -115,9 +120,7 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
           <TableBody>
             {sortedStats.map((stat) => (
               <TableRow key={stat.tmdbId}>
-                <TableCell className="font-medium">
-                  {stat.title}
-                </TableCell>
+                <TableCell className="font-medium">{stat.title}</TableCell>
                 <TableCell>
                   {stat.tmdbId.startsWith("movie-") ? "Movie" : "TV Show"}
                 </TableCell>
@@ -132,13 +135,13 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
                           <TooltipTrigger>
                             <span
                               className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                                attempt.successCount > 0
+                                (attempt.successCount ?? 0) > 0
                                   ? "bg-green-500/20 text-green-500"
                                   : "bg-red-500/20 text-red-500"
                               }`}
                             >
                               {attempt.providerId}
-                              {attempt.successCount > 0 ? (
+                              {(attempt.successCount ?? 0) > 0 ? (
                                 <Check className="h-3 w-3" />
                               ) : (
                                 <X className="h-3 w-3" />
@@ -148,8 +151,9 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="text-sm">
-                              Success: {formatNumber(attempt.successCount || 0)}<br />
-                              Failed: {formatNumber(attempt.failureCount || 0)}
+                              Success: {formatNumber(attempt.successCount ?? 0)}
+                              <br />
+                              Failed: {formatNumber(attempt.failureCount ?? 0)}
                             </p>
                           </TooltipContent>
                         </Tooltip>
