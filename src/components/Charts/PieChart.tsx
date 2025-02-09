@@ -26,7 +26,7 @@ export function PieChart({ title, data }: PieChartProps) {
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <CardContent className="max-h-[400px] w-full">
+      <CardContent className="h-auto md:h-[400px] max-h-[400px] w-full">
         <Pie options={options} data={data} />
       </CardContent>
     </Card>

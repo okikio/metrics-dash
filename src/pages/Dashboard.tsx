@@ -345,11 +345,11 @@ export default function Dashboard() {
           <div id="provider-statistics">
             <ProviderStatusTable metrics={data.customMetrics} />
           </div>
-          <div id="backend-usage">
-            <HostnameStatsTable metrics={data.customMetrics} />
-          </div>
           <div id="watched-content">
             <MediaWatchTable metrics={data.customMetrics} />
+          </div>
+          <div id="backend-usage">
+            <HostnameStatsTable metrics={data.customMetrics} />
           </div>
           <div id="system-performance">
             <SystemMetrics

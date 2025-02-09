@@ -9,10 +9,10 @@ const classNames = (...classes: (string | boolean | undefined | null)[]) => {
 const sections = [
   { id: "overview", label: "Overview" },
   { id: "provider-performance", label: "Provider Performance" },
-  { id: "system-performance", label: "System Performance" },
   { id: "provider-statistics", label: "Provider Statistics" },
-  { id: "backend-usage", label: "Backend Usage" },
   { id: "watched-content", label: "Most Watched Content" },
+  { id: "backend-usage", label: "Backend Usage" },
+  { id: "system-performance", label: "System Performance" },
   { id: "raw-metrics", label: "Raw Metrics" },
 ];
 
