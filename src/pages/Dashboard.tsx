@@ -13,6 +13,7 @@ import { HostnameStatsTable } from "@/components/metrics/HostnameStatsTable";
 import { MediaWatchTable } from "@/components/metrics/MediaWatchTable";
 import { NavigationIndex } from "@/components/metrics/NavigationIndex";
 import { useIsMobile } from "@/hooks/use-mobile";
+import Spinner from "@/components/ui/spinner";
 
 export default function Dashboard() {
   const [url, setUrl] = useState<string | null>(null);
@@ -354,8 +355,9 @@ export default function Dashboard() {
       )}
 
       {isLoading && (
-        <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center justify-center h-64 pt-40">
           <p className="text-lg text-muted-foreground">Loading metrics...</p>
+          <Spinner />
         </div>
       )}
 
