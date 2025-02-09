@@ -294,7 +294,23 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Metrics Dashboard</h1>
+        <div className="flex items-center gap-4 mb-6 pl-2">
+          <span className="h-12 w-12">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="100%"
+              height="100%"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M18.186,4.5V6.241H16.445V4.5H9.482V6.241H7.741V4.5H6V20.168H7.741V18.427H9.482v1.741h6.964V18.427h1.741v1.741h1.741V4.5Zm-8.7,12.186H7.741V14.945H9.482Zm0-3.482H7.741V11.464H9.482Zm0-3.482H7.741V7.982H9.482Zm8.7,6.964H16.445V14.945h1.741Zm0-3.482H16.445V11.464h1.741Zm0-3.482H16.445V7.982h1.741Z"
+                transform="translate(10.018 -7.425) rotate(45)"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+          <h1 className="text-4xl font-bold">Metrics Dashboard</h1>
+        </div>
         <MetricsForm
           onSubmit={handleSubmit}
           isLoading={isLoading}
