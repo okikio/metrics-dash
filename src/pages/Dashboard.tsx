@@ -35,7 +35,7 @@ export default function Dashboard() {
         return parsed;
       } catch (err) {
         throw new Error(
-          err instanceof Error ? err.message : "Failed to fetch metrics",
+          err instanceof Error ? err.message : "Failed to fetch metrics"
         );
       }
     },
@@ -72,27 +72,21 @@ export default function Dashboard() {
     // Group provider status data by provider
     const providerStats = data.customMetrics
       .filter((m) => m.name === "mw_provider_status_count")
-      .reduce(
-        (acc, curr) => {
-          const providerId = curr.labels?.provider_id || "unknown";
-          const status = curr.labels?.status || "unknown";
-          if (!acc[providerId]) {
-            acc[providerId] = { success: 0, failed: 0, notfound: 0 };
-          }
-          if (
-            status === "success" ||
-            status === "failed" ||
-            status === "notfound"
-          ) {
-            acc[providerId][status] = curr.value;
-          }
-          return acc;
-        },
-        {} as Record<
-          string,
-          { success: number; failed: number; notfound: number }
-        >,
-      );
+      .reduce((acc, curr) => {
+        const providerId = curr.labels?.provider_id || "unknown";
+        const status = curr.labels?.status || "unknown";
+        if (!acc[providerId]) {
+          acc[providerId] = { success: 0, failed: 0, notfound: 0 };
+        }
+        if (
+          status === "success" ||
+          status === "failed" ||
+          status === "notfound"
+        ) {
+          acc[providerId][status] = curr.value;
+        }
+        return acc;
+      }, {} as Record<string, { success: number; failed: number; notfound: number }>);
 
     // Calculate failure rates and sort providers
     const providerFailureRates = Object.entries(providerStats)
@@ -152,21 +146,21 @@ export default function Dashboard() {
               .filter(
                 (m) =>
                   m.name === "mw_provider_status_count" &&
-                  m.labels?.status === "success",
+                  m.labels?.status === "success"
               )
               .reduce((acc, curr) => acc + curr.value, 0),
             data.customMetrics
               .filter(
                 (m) =>
                   m.name === "mw_provider_status_count" &&
-                  m.labels?.status === "failed",
+                  m.labels?.status === "failed"
               )
               .reduce((acc, curr) => acc + curr.value, 0),
             data.customMetrics
               .filter(
                 (m) =>
                   m.name === "mw_provider_status_count" &&
-                  m.labels?.status === "notfound",
+                  m.labels?.status === "notfound"
               )
               .reduce((acc, curr) => acc + curr.value, 0),
           ],
@@ -187,10 +181,10 @@ export default function Dashboard() {
         {
           label: "Failure Rate (%)",
           data: providerFailureRates.map((p) =>
-            parseFloat(p.failureRate.toFixed(1)),
+            parseFloat(p.failureRate.toFixed(1))
           ),
           backgroundColor: providerFailureRates.map(
-            () => "rgba(239, 68, 68, 0.8)",
+            () => "rgba(239, 68, 68, 0.8)"
           ),
         },
       ],
@@ -199,30 +193,27 @@ export default function Dashboard() {
     // Calculate average response times by route
     const routeTimings = data.httpMetrics
       .filter((m) => m.name.startsWith("http_request_duration_seconds"))
-      .reduce(
-        (acc, curr) => {
-          const route = curr.labels?.route;
-          const method = curr.labels?.method;
-          if (!route || !method) return acc;
+      .reduce((acc, curr) => {
+        const route = curr.labels?.route;
+        const method = curr.labels?.method;
+        if (!route || !method) return acc;
 
-          const key = `${method} ${route}`;
-          if (!acc[key]) {
-            acc[key] = {
-              sum: 0,
-              count: 0,
-            };
-          }
+        const key = `${method} ${route}`;
+        if (!acc[key]) {
+          acc[key] = {
+            sum: 0,
+            count: 0,
+          };
+        }
 
-          if (curr.name === "http_request_duration_seconds_sum") {
-            acc[key].sum = curr.value;
-          } else if (curr.name === "http_request_duration_seconds_count") {
-            acc[key].count = curr.value;
-          }
+        if (curr.name === "http_request_duration_seconds_sum") {
+          acc[key].sum = curr.value;
+        } else if (curr.name === "http_request_duration_seconds_count") {
+          acc[key].count = curr.value;
+        }
 
-          return acc;
-        },
-        {} as Record<string, { sum: number; count: number }>,
-      );
+        return acc;
+      }, {} as Record<string, { sum: number; count: number }>);
 
     // Convert to averages and sort by response time
     const responseTimeData = {
@@ -265,14 +256,13 @@ export default function Dashboard() {
     const uniqueHosts = new Set(
       data.customMetrics
         .filter((m) => m.name === "mw_provider_hostname_count")
-        .map((m) => m.labels?.hostname),
+        .map((m) => m.labels?.hostname)
     ).size;
 
     const totalFailures = data.customMetrics
       .filter(
         (m) =>
-          m.name === "mw_provider_status_count" &&
-          m.labels?.status === "failed",
+          m.name === "mw_provider_status_count" && m.labels?.status === "failed"
       )
       .reduce((acc, curr) => acc + curr.value, 0);
 
