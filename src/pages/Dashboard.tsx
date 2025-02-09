@@ -260,6 +260,14 @@ export default function Dashboard() {
         .map((m) => m.labels?.hostname)
     ).size;
 
+    const totalSucesses = data.customMetrics
+      .filter(
+        (m) =>
+          m.name === "mw_provider_status_count" &&
+          m.labels?.status === "success"
+      )
+      .reduce((acc, curr) => acc + curr.value, 0);
+
     const totalFailures = data.customMetrics
       .filter(
         (m) =>
@@ -276,6 +284,7 @@ export default function Dashboard() {
         data.nodeMetrics.find((m) => m.name === "nodejs_eventloop_lag_seconds")
           ?.value || 0
       ).toFixed(3),
+      totalSucesses,
       totalFailures,
     };
   }, [data]);

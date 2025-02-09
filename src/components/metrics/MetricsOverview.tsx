@@ -1,5 +1,5 @@
 import { StatCard } from "@/components/StatCard";
-import { Activity, Users, Server, Clock } from "lucide-react";
+import { Activity, Users, Server, Clock, Frown, Smile } from "lucide-react";
 import { formatNumber } from "@/lib/metrics";
 import { ParsedMetrics } from "@/lib/types";
 
@@ -9,6 +9,7 @@ interface MetricsOverviewProps {
     uniqueHosts: number;
     activeUsers: number;
     eventLoopLag: string;
+    totalSucesses: number;
     totalFailures: number;
   };
 }
@@ -23,9 +24,19 @@ export function MetricsOverview({ stats }: MetricsOverviewProps) {
         icon={<Activity />}
       /> */}
       <StatCard
-        title="Unique Hosts"
+        title="Backend Users"
         value={formatNumber(stats.uniqueHosts)}
         icon={<Server />}
+      />
+      <StatCard
+        title="Total Successes"
+        value={formatNumber(stats.totalSucesses)}
+        icon={<Smile />}
+      />{" "}
+      <StatCard
+        title="Total Failures"
+        value={formatNumber(stats.totalFailures)}
+        icon={<Frown />}
       />
     </div>
   );
