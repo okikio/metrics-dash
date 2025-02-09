@@ -47,12 +47,14 @@ export function parsePrometheusMetrics(text: string): ParsedMetrics {
 
           // Parse labels
           labels = {};
-          const labelMatches = labelsStr.slice(1, -1).match(/([^,=]+)="([^"]+)"/g);
+          const labelMatches = labelsStr
+            .slice(1, -1)
+            .match(/([^,=]+)="([^"]+)"/g);
           if (labelMatches) {
-            labelMatches.forEach(label => {
-              const [key, val] = label.split('=');
+            labelMatches.forEach((label) => {
+              const [key, val] = label.split("=");
               if (key && val) {
-                labels![key.trim()] = val.replace(/"/g, '');
+                labels![key.trim()] = val.replace(/"/g, "");
               }
             });
           }
@@ -65,7 +67,7 @@ export function parsePrometheusMetrics(text: string): ParsedMetrics {
           type: currentMetric.type || "untyped",
           help: currentMetric.help || "",
           value,
-          ...(labels && { labels })
+          ...(labels && { labels }),
         });
       }
     }
@@ -76,19 +78,21 @@ export function parsePrometheusMetrics(text: string): ParsedMetrics {
   console.log("Sample metrics:", metrics.slice(0, 3));
 
   return {
-    processMetrics: metrics.filter(m => m.name?.startsWith("process_") ?? false),
-    nodeMetrics: metrics.filter(m => m.name?.startsWith("nodejs_") ?? false),
-    httpMetrics: metrics.filter(m => m.name?.startsWith("http_") ?? false),
-    customMetrics: metrics.filter(m => m.name?.startsWith("mw_") ?? false)
+    processMetrics: metrics.filter(
+      (m) => m.name?.startsWith("process_") ?? false,
+    ),
+    nodeMetrics: metrics.filter((m) => m.name?.startsWith("nodejs_") ?? false),
+    httpMetrics: metrics.filter((m) => m.name?.startsWith("http_") ?? false),
+    customMetrics: metrics.filter((m) => m.name?.startsWith("mw_") ?? false),
   };
 }
 
 export function formatNumber(num: number): string {
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M';
+    return (num / 1000000).toFixed(1) + "M";
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
+    return (num / 1000).toFixed(1) + "K";
   }
   return num.toFixed(0);
 }

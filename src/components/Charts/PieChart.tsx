@@ -1,11 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend
-} from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { ChartData } from "@/lib/types";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -15,9 +10,9 @@ const options = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      position: 'right' as const,
-    }
-  }
+      position: "right" as const,
+    },
+  },
 };
 
 interface PieChartProps {

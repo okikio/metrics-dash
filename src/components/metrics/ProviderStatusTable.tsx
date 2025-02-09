@@ -34,36 +34,39 @@ export function ProviderStatusTable({ metrics }: ProviderStatusTableProps) {
   // Process the metrics to get provider statistics
   const providerStats = metrics
     .filter((m) => m.name === "mw_provider_status_count")
-    .reduce((acc, curr) => {
-      const providerId = curr.labels?.provider_id || "unknown";
-      const status = curr.labels?.status || "unknown";
-      const value = curr.value;
+    .reduce(
+      (acc, curr) => {
+        const providerId = curr.labels?.provider_id || "unknown";
+        const status = curr.labels?.status || "unknown";
+        const value = curr.value;
 
-      if (!acc[providerId]) {
-        acc[providerId] = {
-          provider: providerId,
-          success: 0,
-          failed: 0,
-          notfound: 0,
-          total: 0,
-          successRate: 0,
-        };
-      }
+        if (!acc[providerId]) {
+          acc[providerId] = {
+            provider: providerId,
+            success: 0,
+            failed: 0,
+            notfound: 0,
+            total: 0,
+            successRate: 0,
+          };
+        }
 
-      // Using type assertion to handle the dynamic status field
-      (acc[providerId] as any)[status] = value;
-      acc[providerId].total += value;
-      acc[providerId].successRate =
-        (acc[providerId].success / acc[providerId].total) * 100;
+        // Using type assertion to handle the dynamic status field
+        (acc[providerId] as any)[status] = value;
+        acc[providerId].total += value;
+        acc[providerId].successRate =
+          (acc[providerId].success / acc[providerId].total) * 100;
 
-      return acc;
-    }, {} as Record<string, ProviderStats>);
+        return acc;
+      },
+      {} as Record<string, ProviderStats>,
+    );
 
   // Convert to array and sort by total requests
   const sortedStats = Object.values(providerStats)
     .sort((a, b) => b.total - a.total)
     .filter((stat) =>
-      stat.provider.toLowerCase().includes(searchTerm.toLowerCase())
+      stat.provider.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
   return (

@@ -86,10 +86,7 @@ const config: Config = {
     "bg-secondary",
     "text-secondary",
   ],
-  plugins: [
-    require("tailwindcss-animate"),
-    require("@tailwindcss/typography"),
-  ],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 };
 
 export default config;

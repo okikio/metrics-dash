@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { ChevronRight } from "lucide-react";
 
 // Simple utility function to concatenate classNames
 const classNames = (...classes: (string | boolean | undefined | null)[]) => {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 };
 
 const sections = [
@@ -23,7 +23,8 @@ export function NavigationIndex() {
     const element = document.getElementById(sectionId);
     if (element) {
       const yOffset = -80;
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      const y =
+        element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: "smooth" });
       setActiveSection(sectionId);
     }
@@ -42,7 +43,7 @@ export function NavigationIndex() {
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   "disabled:pointer-events-none disabled:opacity-50",
                   "hover:bg-accent hover:text-accent-foreground",
-                  "flex-shrink-0"
+                  "flex-shrink-0",
                 )}
               >
                 {section.label}

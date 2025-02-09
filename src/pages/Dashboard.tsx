@@ -79,11 +79,16 @@ export default function Dashboard() {
           if (!acc[providerId]) {
             acc[providerId] = { success: 0, failed: 0, notfound: 0 };
           }
-          if (status === "success" || status === "failed" || status === "notfound") {
+          if (
+            status === "success" ||
+            status === "failed" ||
+            status === "notfound"
+          ) {
             acc[providerId][status] = curr.value;
           }
           return acc;
-        },        {} as Record<
+        },
+        {} as Record<
           string,
           { success: number; failed: number; notfound: number }
         >,
@@ -132,8 +137,8 @@ export default function Dashboard() {
             .filter((m) => m.name === "http_request_duration_seconds_count")
             .slice(0, 10)
             .map((m) => m.value),
-            backgroundColor: ["rgba(54, 162, 235, 0.8)"],
-          },
+          backgroundColor: ["rgba(54, 162, 235, 0.8)"],
+        },
       ],
     };
 
@@ -181,55 +186,64 @@ export default function Dashboard() {
       datasets: [
         {
           label: "Failure Rate (%)",
-          data: providerFailureRates.map((p) => parseFloat(p.failureRate.toFixed(1))),
-          backgroundColor: providerFailureRates.map(() => "rgba(239, 68, 68, 0.8)"),
+          data: providerFailureRates.map((p) =>
+            parseFloat(p.failureRate.toFixed(1)),
+          ),
+          backgroundColor: providerFailureRates.map(
+            () => "rgba(239, 68, 68, 0.8)",
+          ),
         },
       ],
     };
 
     // Calculate average response times by route
     const routeTimings = data.httpMetrics
-      .filter(m => m.name.startsWith('http_request_duration_seconds'))
-      .reduce((acc, curr) => {
-        const route = curr.labels?.route;
-        const method = curr.labels?.method;
-        if (!route || !method) return acc;
+      .filter((m) => m.name.startsWith("http_request_duration_seconds"))
+      .reduce(
+        (acc, curr) => {
+          const route = curr.labels?.route;
+          const method = curr.labels?.method;
+          if (!route || !method) return acc;
 
-        const key = `${method} ${route}`;
-        if (!acc[key]) {
-          acc[key] = {
-            sum: 0,
-            count: 0
-          };
-        }
+          const key = `${method} ${route}`;
+          if (!acc[key]) {
+            acc[key] = {
+              sum: 0,
+              count: 0,
+            };
+          }
 
-        if (curr.name === 'http_request_duration_seconds_sum') {
-          acc[key].sum = curr.value;
-        } else if (curr.name === 'http_request_duration_seconds_count') {
-          acc[key].count = curr.value;
-        }
+          if (curr.name === "http_request_duration_seconds_sum") {
+            acc[key].sum = curr.value;
+          } else if (curr.name === "http_request_duration_seconds_count") {
+            acc[key].count = curr.value;
+          }
 
-        return acc;
-      }, {} as Record<string, { sum: number; count: number }>);
+          return acc;
+        },
+        {} as Record<string, { sum: number; count: number }>,
+      );
 
     // Convert to averages and sort by response time
     const responseTimeData = {
       labels: Object.entries(routeTimings)
         .map(([route, { sum, count }]) => ({
           route,
-          avgTime: (sum / count) * 1000 // Convert to milliseconds
+          avgTime: (sum / count) * 1000, // Convert to milliseconds
         }))
         .sort((a, b) => b.avgTime - a.avgTime)
         .slice(0, 10)
-        .map(entry => entry.route),
-      datasets: [{
-        label: 'Average Response Time (ms)',
-        data: Object.entries(routeTimings)
-          .map(([_, { sum, count }]) => (sum / count) * 1000)
-          .sort((a, b) => b - a)
-          .slice(0, 10),
+        .map((entry) => entry.route),
+      datasets: [
+        {
+          label: "Average Response Time (ms)",
+          data: Object.entries(routeTimings)
+            .map(([_, { sum, count }]) => (sum / count) * 1000)
+            .sort((a, b) => b - a)
+            .slice(0, 10),
           backgroundColor: ["rgba(234, 179, 8, 0.8)"],
-        }]
+        },
+      ],
     };
 
     return {
@@ -303,7 +317,7 @@ export default function Dashboard() {
             <ProviderMetrics {...chartData} />
           </div>
           <div id="system-performance">
-            <SystemMetrics 
+            <SystemMetrics
               httpDurationData={chartData.httpDurationData}
               responseTimeData={chartData.responseTimeData}
             />

@@ -1,13 +1,19 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
 const formSchema = z.object({
-  url: z.string().url("Please enter a valid URL")
+  url: z.string().url("Please enter a valid URL"),
 });
 
 interface MetricsFormProps {
@@ -17,17 +23,25 @@ interface MetricsFormProps {
   onAutoRefreshToggle: () => void;
 }
 
-export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshToggle }: MetricsFormProps) {
+export function MetricsForm({
+  onSubmit,
+  isLoading,
+  autoRefresh,
+  onAutoRefreshToggle,
+}: MetricsFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      url: "https://server.fifthwit.tech/metrics"
-    }
+      url: "https://server.fifthwit.tech/metrics",
+    },
   });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(data => onSubmit(data.url))} className="flex gap-4 items-end">
+      <form
+        onSubmit={form.handleSubmit((data) => onSubmit(data.url))}
+        className="flex gap-4 items-end"
+      >
         <FormField
           control={form.control}
           name="url"
@@ -49,7 +63,9 @@ export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshTog
           onClick={onAutoRefreshToggle}
           className="gap-2"
         >
-          <RefreshCw className={`h-4 w-4 ${autoRefresh ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`h-4 w-4 ${autoRefresh ? "animate-spin" : ""}`}
+          />
           Auto-refresh
         </Button>
       </form>

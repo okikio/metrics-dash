@@ -16,11 +16,7 @@ interface MetricsOverviewProps {
 export function MetricsOverview({ stats }: MetricsOverviewProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <StatCard
-        title="Accounts"
-        value={stats.activeUsers}
-        icon={<Users />}
-      />
+      <StatCard title="Accounts" value={stats.activeUsers} icon={<Users />} />
       <StatCard
         title="Total Requests"
         value={formatNumber(stats.totalRequests)}
