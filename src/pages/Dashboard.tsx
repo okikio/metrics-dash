@@ -289,21 +289,6 @@ export default function Dashboard() {
         .map((m) => m.labels?.hostname)
     ).size;
 
-    // const totalSucesses = data.customMetrics
-    //   .filter(
-    //     (m) =>
-    //       m.name === "mw_provider_status_count" &&
-    //       m.labels?.status === "success"
-    //   )
-    //   .reduce((acc, curr) => acc + curr.value, 0);
-
-    // const totalFailures = data.customMetrics
-    //   .filter(
-    //     (m) =>
-    //       m.name === "mw_provider_status_count" && m.labels?.status === "failed"
-    //   )
-    //   .reduce((acc, curr) => acc + curr.value, 0);
-
     return {
       totalWatchRequests,
       uniqueHosts,
