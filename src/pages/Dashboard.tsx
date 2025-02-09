@@ -90,7 +90,7 @@ export default function Dashboard() {
       }, {} as Record<string, { success: number; failed: number; notfound: number }>);
 
     // Calculate failure rates and sort providers
-    const providerFailureRates = Object.entries(providerStats)
+    const providerFailureRates10 = Object.entries(providerStats)
       .map(([provider, stats]) => {
         const total = stats.success + stats.failed + stats.notfound;
         const failureRate = (stats.failed / total) * 100;
@@ -98,6 +98,15 @@ export default function Dashboard() {
       })
       .sort((a, b) => b.failureRate - a.failureRate)
       .slice(0, 10);
+
+    const providerFailureRates20 = Object.entries(providerStats)
+      .map(([provider, stats]) => {
+        const total = stats.success + stats.failed + stats.notfound;
+        const failureRate = (stats.failed / total) * 100;
+        return { provider, failureRate, ...stats };
+      })
+      .sort((a, b) => b.failureRate - a.failureRate)
+      .slice(0, 20);
 
     const providerToolData = {
       labels: data.customMetrics
@@ -176,15 +185,30 @@ export default function Dashboard() {
       ],
     };
 
-    const providerFailuresData = {
-      labels: providerFailureRates.map((p) => p.provider),
+    const providerFailuresData10 = {
+      labels: providerFailureRates10.map((p) => p.provider),
       datasets: [
         {
           label: "Failure Rate (%)",
-          data: providerFailureRates.map((p) =>
+          data: providerFailureRates10.map((p) =>
             parseFloat(p.failureRate.toFixed(1))
           ),
-          backgroundColor: providerFailureRates.map(
+          backgroundColor: providerFailureRates10.map(
+            () => "rgba(239, 68, 68, 0.8)"
+          ),
+        },
+      ],
+    };
+
+    const providerFailuresData20 = {
+      labels: providerFailureRates20.map((p) => p.provider),
+      datasets: [
+        {
+          label: "Failure Rate (%)",
+          data: providerFailureRates20.map((p) =>
+            parseFloat(p.failureRate.toFixed(1))
+          ),
+          backgroundColor: providerFailureRates20.map(
             () => "rgba(239, 68, 68, 0.8)"
           ),
         },
@@ -242,7 +266,8 @@ export default function Dashboard() {
       providerToolData,
       httpDurationData,
       providerStatusData,
-      providerFailuresData,
+      providerFailuresData10,
+      providerFailuresData20,
       responseTimeData,
     };
   }, [data]);
@@ -250,9 +275,12 @@ export default function Dashboard() {
   const stats = useMemo(() => {
     if (!data) return null;
 
-    const totalRequests = data.httpMetrics
-      .filter((m) => m.name === "mw_media_watch_count") // this is broken
-      .reduce((acc, curr) => acc + curr.value, 0);
+    const totalWatchRequests = data.customMetrics
+      .filter((m) => m.name === "mw_media_watch_count")
+      .reduce(
+        (acc, curr) => acc + (typeof curr.value === "number" ? curr.value : 0),
+        0
+      );
 
     const uniqueHosts = new Set(
       data.customMetrics
@@ -260,23 +288,23 @@ export default function Dashboard() {
         .map((m) => m.labels?.hostname)
     ).size;
 
-    const totalSucesses = data.customMetrics
-      .filter(
-        (m) =>
-          m.name === "mw_provider_status_count" &&
-          m.labels?.status === "success"
-      )
-      .reduce((acc, curr) => acc + curr.value, 0);
+    // const totalSucesses = data.customMetrics
+    //   .filter(
+    //     (m) =>
+    //       m.name === "mw_provider_status_count" &&
+    //       m.labels?.status === "success"
+    //   )
+    //   .reduce((acc, curr) => acc + curr.value, 0);
 
-    const totalFailures = data.customMetrics
-      .filter(
-        (m) =>
-          m.name === "mw_provider_status_count" && m.labels?.status === "failed"
-      )
-      .reduce((acc, curr) => acc + curr.value, 0);
+    // const totalFailures = data.customMetrics
+    //   .filter(
+    //     (m) =>
+    //       m.name === "mw_provider_status_count" && m.labels?.status === "failed"
+    //   )
+    //   .reduce((acc, curr) => acc + curr.value, 0);
 
     return {
-      totalRequests,
+      totalWatchRequests,
       uniqueHosts,
       activeUsers:
         data.customMetrics.find((m) => m.name === "mw_user_count")?.value || 0,
@@ -284,8 +312,6 @@ export default function Dashboard() {
         data.nodeMetrics.find((m) => m.name === "nodejs_eventloop_lag_seconds")
           ?.value || 0
       ).toFixed(3),
-      totalSucesses,
-      totalFailures,
     };
   }, [data]);
 
