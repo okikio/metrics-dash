@@ -42,6 +42,7 @@ export function ProviderMetrics({
           ) : (
             <BarChart
               title="Top 20 Provider Failure Rates"
+              description="May contain outliers"
               data={providerFailuresData20}
             />
           )}

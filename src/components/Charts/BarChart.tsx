@@ -52,13 +52,15 @@ const options = {
 interface BarChartProps {
   title: string;
   data: ChartData;
+  description?: string;
 }
 
-export function BarChart({ title, data }: BarChartProps) {
+export function BarChart({ title, data, description }: BarChartProps) {
   return (
     <Card className="col-span-2">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
+        <p className="text-xs text-muted-foreground">{description}</p>
       </CardHeader>
       <CardContent className="h-[400px] w-full">
         <Bar options={options} data={data} />
