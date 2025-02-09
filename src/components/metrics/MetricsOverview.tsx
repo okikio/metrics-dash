@@ -17,10 +17,15 @@ export function MetricsOverview({ stats }: MetricsOverviewProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <StatCard title="Accounts" value={stats.activeUsers} icon={<Users />} />
-      <StatCard
+      {/* <StatCard
         title="Total Requests"
         value={formatNumber(stats.totalRequests)}
         icon={<Activity />}
+      /> */}
+      <StatCard
+        title="Unique Hosts"
+        value={formatNumber(stats.uniqueHosts)}
+        icon={<Server />}
       />
     </div>
   );

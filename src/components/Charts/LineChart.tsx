@@ -19,7 +19,7 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend,
+  Legend
 );
 
 const options = {
@@ -58,11 +58,11 @@ interface LineChartProps {
 
 export function LineChart({ title, data }: LineChartProps) {
   return (
-    <Card className="col-span-2">
+    <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <CardContent className="h-[400px]">
+      <CardContent className="h-[400px] w-full">
         <Line options={options} data={data} />
       </CardContent>
     </Card>

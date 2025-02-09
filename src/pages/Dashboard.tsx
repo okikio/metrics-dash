@@ -12,6 +12,7 @@ import { ProviderStatusTable } from "@/components/metrics/ProviderStatusTable";
 import { HostnameStatsTable } from "@/components/metrics/HostnameStatsTable";
 import { MediaWatchTable } from "@/components/metrics/MediaWatchTable";
 import { NavigationIndex } from "@/components/metrics/NavigationIndex";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Dashboard() {
   const [url, setUrl] = useState<string | null>(null);
@@ -250,7 +251,7 @@ export default function Dashboard() {
     if (!data) return null;
 
     const totalRequests = data.httpMetrics
-      .filter((m) => m.name === "http_request_duration_seconds_count")
+      .filter((m) => m.name === "mw_media_watch_count") // this is broken
       .reduce((acc, curr) => acc + curr.value, 0);
 
     const uniqueHosts = new Set(
@@ -279,6 +280,8 @@ export default function Dashboard() {
     };
   }, [data]);
 
+  const isMobile = useIsMobile();
+
   return (
     <DashboardLayout>
       <div className="mb-8">
@@ -290,6 +293,14 @@ export default function Dashboard() {
           onAutoRefreshToggle={() => setAutoRefresh(!autoRefresh)}
         />
       </div>
+
+      {isMobile && (
+        <div className="w-full flex items-center justify-center">
+          <p className="text-s text-muted-foreground">
+            Please use a larger screen for a better experience.
+          </p>
+        </div>
+      )}
 
       {isLoading && (
         <div className="flex items-center justify-center h-64">
@@ -306,12 +317,6 @@ export default function Dashboard() {
           <div id="provider-performance">
             <ProviderMetrics {...chartData} />
           </div>
-          <div id="system-performance">
-            <SystemMetrics
-              httpDurationData={chartData.httpDurationData}
-              responseTimeData={chartData.responseTimeData}
-            />
-          </div>
           <div id="provider-statistics">
             <ProviderStatusTable metrics={data.customMetrics} />
           </div>
@@ -320,6 +325,12 @@ export default function Dashboard() {
           </div>
           <div id="watched-content">
             <MediaWatchTable metrics={data.customMetrics} />
+          </div>
+          <div id="system-performance">
+            <SystemMetrics
+              httpDurationData={chartData.httpDurationData}
+              responseTimeData={chartData.responseTimeData}
+            />
           </div>
           {rawResponse && (
             <div id="raw-metrics">

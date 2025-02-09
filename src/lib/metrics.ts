@@ -73,13 +73,15 @@ export function parsePrometheusMetrics(text: string): ParsedMetrics {
     }
   }
 
+  const totalMetrics = metrics.length;
+
   // Debug log to check the parsed metrics
-  console.log("Total metrics parsed:", metrics.length);
+  console.log("Total metrics parsed:", totalMetrics);
   console.log("Sample metrics:", metrics.slice(0, 3));
 
   return {
     processMetrics: metrics.filter(
-      (m) => m.name?.startsWith("process_") ?? false,
+      (m) => m.name?.startsWith("process_") ?? false
     ),
     nodeMetrics: metrics.filter((m) => m.name?.startsWith("nodejs_") ?? false),
     httpMetrics: metrics.filter((m) => m.name?.startsWith("http_") ?? false),

@@ -18,21 +18,21 @@ export function ProviderMetrics({
   return (
     <>
       <CollapsibleCard title="Provider Performance">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-1">
           <LineChart
             title="Provider Status Distribution"
             data={providerStatusData}
           />
-          <BarChart
-            title="Top 10 Provider Failure Rates"
-            data={providerFailuresData}
-          />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-1 mt-4">
+        <div className="grid gap-4 md:grid-cols-3 mt-4">
           <PieChart
             title="Provider Tool Distribution"
             data={providerToolData}
+          />
+          <BarChart
+            title="Top 10 Provider Failure Rates"
+            data={providerFailuresData}
           />
         </div>
       </CollapsibleCard>

@@ -17,7 +17,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend,
+  Legend
 );
 
 const options = {
@@ -60,7 +60,7 @@ export function BarChart({ title, data }: BarChartProps) {
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <CardContent className="h-[400px]">
+      <CardContent className="h-[400px] w-full">
         <Bar options={options} data={data} />
       </CardContent>
     </Card>

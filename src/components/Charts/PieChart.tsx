@@ -22,11 +22,11 @@ interface PieChartProps {
 
 export function PieChart({ title, data }: PieChartProps) {
   return (
-    <Card>
+    <Card className="col-span-1">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <CardContent className="h-[300px]">
+      <CardContent className="max-h-[400px] w-full">
         <Pie options={options} data={data} />
       </CardContent>
     </Card>
