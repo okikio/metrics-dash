@@ -23,7 +23,7 @@ export function ProviderMetrics({
     <>
       <CollapsibleCard title="Provider Performance">
         <div className="grid gap-4 md:grid-cols-1">
-          <LineChart
+          <BarChart
             title="Provider Status Distribution"
             data={providerStatusData}
           />
