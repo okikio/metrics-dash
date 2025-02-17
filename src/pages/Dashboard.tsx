@@ -14,6 +14,7 @@ import { MediaWatchTable } from "@/components/metrics/MediaWatchTable";
 import { NavigationIndex } from "@/components/metrics/NavigationIndex";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Spinner from "@/components/ui/spinner";
+import { GitHubButton } from "@/components/ui/GitHubButton";
 
 export default function Dashboard() {
   const [url, setUrl] = useState<string | null>(null);
@@ -377,6 +378,7 @@ export default function Dashboard() {
           )}
         </div>
       )}
+      <GitHubButton />
     </DashboardLayout>
   );
 }
