@@ -37,7 +37,7 @@ interface MetricsFormProps {
 
 export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshToggle, currentUrl }: MetricsFormProps) {
   const { toast } = useToast();
-  const [localLoading, setLocalLoading] = useState(false); // 🔥 Instant UI update
+  const [localLoading, setLocalLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -105,14 +105,13 @@ export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshTog
   };
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    setLocalLoading(true); // 🔥 Instantly show loading state
-
+    setLocalLoading(true); // Almost instantly toggle the loading state.
     const isAvailable = await checkUrlAvailability(data.url);
     if (isAvailable) {
       onSubmit(data.url);
     }
 
-    setLocalLoading(false); // 🔥 Reset loading state after request
+    setLocalLoading(false); // Resets the loading state after request.
   };
 
   return (
@@ -124,7 +123,7 @@ export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshTog
             name="url"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Metrics URL</FormLabel>
+                <FormLabel>Metrics URL:</FormLabel>
                 <FormControl>
                   <Input placeholder="https://your-server/metrics" {...field} className="w-full rounded-xl" />
                 </FormControl>
@@ -133,7 +132,7 @@ export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshTog
           />
           <div className="grid grid-cols-2 gap-4">
             <Button type="submit" disabled={isLoading || localLoading} className="rounded-xl hover:bg-[#4A89F3]">
-              {localLoading ? "Fetching..." : "Fetch Metrics"} {/* 🔥 Instant text change */}
+              {localLoading ? "Fetching..." : "Fetch Metrics"} {/* Change the text based on what's going on within the code. */}
             </Button>
             <Button
               type="button"
