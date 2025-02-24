@@ -290,6 +290,7 @@ export default function Dashboard() {
         .map((m) => m.labels?.hostname)
     ).size;
 
+
     return {
       totalWatchRequests,
       uniqueHosts,
