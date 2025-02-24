@@ -373,7 +373,10 @@ export default function Dashboard() {
           </div>
           {rawResponse && (
             <div id="raw-metrics">
-              <RawMetricsViewer rawResponse={rawResponse} />
+              <RawMetricsViewer
+                rawResponse={rawResponse}
+                metricsUrl={url || ""}
+              />
             </div>
           )}
         </div>
