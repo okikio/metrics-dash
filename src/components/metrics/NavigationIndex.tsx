@@ -1,9 +1,15 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useCallback } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn } from "@/lib/utils"
-import { throttle } from "lodash"
+import { useEffect, useState, useCallback } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { throttle } from "lodash";
 
 const sections = [
   { id: "overview", label: "Overview" },
@@ -13,45 +19,46 @@ const sections = [
   { id: "backend-usage", label: "Backend Usage" },
   { id: "system-performance", label: "System Performance" },
   { id: "raw-metrics", label: "Raw Metrics" },
-]
+];
 
 export function NavigationIndex() {
-  const [activeSection, setActiveSection] = useState("overview")
+  const [activeSection, setActiveSection] = useState("overview");
 
   const determineActiveSection = useCallback(() => {
-    let currentSection = sections[0].id
-    const scrollPosition = window.scrollY + 100 // Add offset for header
+    let currentSection = sections[0].id;
+    const scrollPosition = window.scrollY + 100; // Add offset for header
 
     sections.forEach((section) => {
-      const element = document.getElementById(section.id)
+      const element = document.getElementById(section.id);
       if (element && element.offsetTop <= scrollPosition) {
-        currentSection = section.id
+        currentSection = section.id;
       }
-    })
+    });
 
-    setActiveSection(currentSection)
-  }, [])
+    setActiveSection(currentSection);
+  }, []);
 
   useEffect(() => {
-    const throttledScrollHandler = throttle(determineActiveSection, 100)
+    const throttledScrollHandler = throttle(determineActiveSection, 100);
 
-    window.addEventListener("scroll", throttledScrollHandler)
-    determineActiveSection() // Initial check
+    window.addEventListener("scroll", throttledScrollHandler);
+    determineActiveSection(); // Initial check
 
     return () => {
-      window.removeEventListener("scroll", throttledScrollHandler)
-    }
-  }, [determineActiveSection])
+      window.removeEventListener("scroll", throttledScrollHandler);
+    };
+  }, [determineActiveSection]);
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
+    const element = document.getElementById(sectionId);
     if (element) {
-      const yOffset = -80
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset
-      window.scrollTo({ top: y, behavior: "smooth" })
-      setActiveSection(sectionId)
+      const yOffset = -80;
+      const y =
+        element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+      setActiveSection(sectionId);
     }
-  }
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
@@ -84,7 +91,8 @@ export function NavigationIndex() {
                 "disabled:pointer-events-none disabled:opacity-50",
                 "hover:bg-accent hover:text-accent-foreground",
                 "flex-shrink-0",
-                activeSection === section.id && "bg-accent text-accent-foreground",
+                activeSection === section.id &&
+                  "bg-accent text-accent-foreground",
               )}
             >
               {section.label}
@@ -93,7 +101,7 @@ export function NavigationIndex() {
         </div>
       </div>
     </nav>
-  )
+  );
 }
 
-export default NavigationIndex
+export default NavigationIndex;

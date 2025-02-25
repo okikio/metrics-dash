@@ -43,61 +43,64 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
   // Process the metrics to get media statistics
   const mediaStats = metrics
     .filter((m) => m.name === "mw_media_watch_count")
-    .reduce((acc, curr) => {
-      const title = curr.labels?.title || "Unknown";
-      const tmdbId = curr.labels?.tmdb_full_id || "unknown";
-      const providerId = curr.labels?.provider_id || "unknown";
-      const success = curr.labels?.success === "true";
-      const count = curr.value;
+    .reduce(
+      (acc, curr) => {
+        const title = curr.labels?.title || "Unknown";
+        const tmdbId = curr.labels?.tmdb_full_id || "unknown";
+        const providerId = curr.labels?.provider_id || "unknown";
+        const success = curr.labels?.success === "true";
+        const count = curr.value;
 
-      if (!acc[tmdbId]) {
-        acc[tmdbId] = {
-          title,
-          tmdbId,
-          attempts: [],
-          totalCount: 0,
-          successRate: 0,
-        };
-      }
-
-      // Find if there's already an attempt with this provider
-      const existingAttempt = acc[tmdbId].attempts.find(
-        (a) => a.providerId === providerId
-      );
-
-      if (existingAttempt) {
-        // Update existing attempt
-        if (success) {
-          existingAttempt.successCount =
-            (existingAttempt.successCount || 0) + count;
-        } else {
-          existingAttempt.failureCount =
-            (existingAttempt.failureCount || 0) + count;
+        if (!acc[tmdbId]) {
+          acc[tmdbId] = {
+            title,
+            tmdbId,
+            attempts: [],
+            totalCount: 0,
+            successRate: 0,
+          };
         }
-        existingAttempt.count += count;
-      } else {
-        // Add new attempt
-        acc[tmdbId].attempts.push({
-          providerId,
-          success,
-          count,
-          successCount: success ? count : 0,
-          failureCount: success ? 0 : count,
-        });
-      }
 
-      acc[tmdbId].totalCount += count;
+        // Find if there's already an attempt with this provider
+        const existingAttempt = acc[tmdbId].attempts.find(
+          (a) => a.providerId === providerId,
+        );
 
-      // Recalculate success rate
-      const successfulAttempts = acc[tmdbId].attempts.reduce(
-        (sum, a) => sum + (a.successCount || 0),
-        0
-      );
-      acc[tmdbId].successRate =
-        (successfulAttempts / acc[tmdbId].totalCount) * 100;
+        if (existingAttempt) {
+          // Update existing attempt
+          if (success) {
+            existingAttempt.successCount =
+              (existingAttempt.successCount || 0) + count;
+          } else {
+            existingAttempt.failureCount =
+              (existingAttempt.failureCount || 0) + count;
+          }
+          existingAttempt.count += count;
+        } else {
+          // Add new attempt
+          acc[tmdbId].attempts.push({
+            providerId,
+            success,
+            count,
+            successCount: success ? count : 0,
+            failureCount: success ? 0 : count,
+          });
+        }
 
-      return acc;
-    }, {} as Record<string, MediaStats>);
+        acc[tmdbId].totalCount += count;
+
+        // Recalculate success rate
+        const successfulAttempts = acc[tmdbId].attempts.reduce(
+          (sum, a) => sum + (a.successCount || 0),
+          0,
+        );
+        acc[tmdbId].successRate =
+          (successfulAttempts / acc[tmdbId].totalCount) * 100;
+
+        return acc;
+      },
+      {} as Record<string, MediaStats>,
+    );
 
   // Convert to array and sort by total watch count
   const sortedStats = Object.values(mediaStats)

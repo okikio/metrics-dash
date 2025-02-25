@@ -25,7 +25,7 @@ const options = {
           const value = context.parsed;
           const total = context.dataset.data.reduce(
             (a: number, b: number) => a + b,
-            0
+            0,
           );
           const percentage = ((value / total) * 100).toFixed(2) + "%";
           return `${label}: ${value} (${percentage})`;

@@ -4,7 +4,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -35,7 +41,13 @@ interface MetricsFormProps {
   currentUrl?: string;
 }
 
-export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshToggle, currentUrl }: MetricsFormProps) {
+export function MetricsForm({
+  onSubmit,
+  isLoading,
+  autoRefresh,
+  onAutoRefreshToggle,
+  currentUrl,
+}: MetricsFormProps) {
   const { toast } = useToast();
   const [localLoading, setLocalLoading] = useState(false);
 
@@ -63,16 +75,26 @@ export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshTog
       const timeoutId = setTimeout(() => controller.abort(), 15000); // ⏳ 15-second timeout
 
       try {
-        response = await fetch(url, { method: "HEAD", headers, signal: controller.signal });
+        response = await fetch(url, {
+          method: "HEAD",
+          headers,
+          signal: controller.signal,
+        });
       } catch (err) {
         console.warn(`HEAD request failed, falling back to GET for: ${url}`);
       }
 
       if (!response || !response.ok) {
-        response = await fetch(url, { method: "GET", headers, signal: controller.signal });
+        response = await fetch(url, {
+          method: "GET",
+          headers,
+          signal: controller.signal,
+        });
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch "${url}" (Status: ${response.status})`);
+          throw new Error(
+            `Failed to fetch "${url}" (Status: ${response.status})`,
+          );
         }
       }
 
@@ -80,7 +102,9 @@ export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshTog
 
       const contentType = response.headers.get("content-type");
       if (!contentType?.includes("text/plain")) {
-        throw new Error(`Invalid metrics endpoint: "${url}" does not return text/plain content`);
+        throw new Error(
+          `Invalid metrics endpoint: "${url}" does not return text/plain content`,
+        );
       }
 
       return true;
@@ -117,7 +141,10 @@ export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshTog
   return (
     <div className="flex items-center justify-center p-4">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col gap-6 w-full max-w-md">
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="flex flex-col gap-6 w-full max-w-md"
+        >
           <FormField
             control={form.control}
             name="url"
@@ -125,14 +152,23 @@ export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshTog
               <FormItem>
                 <FormLabel>Metrics URL:</FormLabel>
                 <FormControl>
-                  <Input placeholder="https://your-server/metrics" {...field} className="w-full rounded-xl" />
+                  <Input
+                    placeholder="https://your-server/metrics"
+                    {...field}
+                    className="w-full rounded-xl"
+                  />
                 </FormControl>
               </FormItem>
             )}
           />
           <div className="grid grid-cols-2 gap-4">
-            <Button type="submit" disabled={isLoading || localLoading} className="rounded-xl hover:bg-[#4A89F3]">
-              {localLoading ? "Fetching..." : "Fetch Metrics"} {/* Change the text based on what's going on within the code. */}
+            <Button
+              type="submit"
+              disabled={isLoading || localLoading}
+              className="rounded-xl hover:bg-[#4A89F3]"
+            >
+              {localLoading ? "Fetching..." : "Fetch Metrics"}{" "}
+              {/* Change the text based on what's going on within the code. */}
             </Button>
             <Button
               type="button"
@@ -141,7 +177,9 @@ export function MetricsForm({ onSubmit, isLoading, autoRefresh, onAutoRefreshTog
               className="gap-2 rounded-xl"
               disabled={isLoading}
             >
-              <RefreshCw className={`h-4 w-4 ${autoRefresh ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`h-4 w-4 ${autoRefresh ? "animate-spin" : ""}`}
+              />
               Auto-refresh
             </Button>
           </div>

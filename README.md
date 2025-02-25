@@ -2,25 +2,26 @@
 
 A lightweight, user-friendly dashboard to visualize metrics from your movie-web backend instance without needing Prometheus/Grafana. Simply enter your metrics endpoint and get actionable insights!
 
-**Backend Documentation**: 
+**Backend Documentation**:
 For information about setting up a backend check the [docs here.](https://docs.undi.rest/backend/introduction)
 
 ---
 
 ## ✨ Features
+
 - **Simple Metrics URL Input** - No complex setup, just paste your backend's `/metrics` endpoint (e.g., `https://your-server/metrics`)
 - **Auto-Refresh**
-- **Key Overview Metrics**  
+- **Key Overview Metrics**
   - Total Accounts
   - Total Watch Requests
-- **Provider Analytics**  
+- **Provider Analytics**
   - Success/Failure Rates
-- **Content Popularity Insights**  
+- **Content Popularity Insights**
   - Most Watched Movies/TV Shows
-- **Traffic Analysis**  
+- **Traffic Analysis**
   - Backend Usage by Domain
   - Request Volume & Traffic Share
-- **System Performance**  
+- **System Performance**
   - HTTP Request Counts by Route
   - Average Response Times
 - **More!**
@@ -48,22 +49,23 @@ For information about setting up a backend check the [docs here.](https://docs.u
 ## 📊 Example Metrics Preview
 
 ### Provider Performance (Sample Data)
-| Provider       | Success Rate | Total Requests |
-|----------------|--------------|----------------|
-| flix-hq       | 82.3%        | 140.8K         |
-| kissasian      | 96.9%        | 35.7K          |
-| autoembed      | 8.4%         | 19.6K          |
+
+| Provider  | Success Rate | Total Requests |
+| --------- | ------------ | -------------- |
+| flix-hq   | 82.3%        | 140.8K         |
+| kissasian | 96.9%        | 35.7K          |
+| autoembed | 8.4%         | 19.6K          |
 
 ### Most Watched Content
-| Title                          | Type     | Total Watches | Success Rate |
-|--------------------------------|----------|---------------|--------------|
-| INVINCIBLE                     | TV Show  | 17.1K         | 84.7%        |
-| Severance                      | TV Show  | 12.2K         | 80.1%        |
-| Captain America: Brave New World | Movie    | 2.4K          | 69.5%        |
 
+| Title                            | Type    | Total Watches | Success Rate |
+| -------------------------------- | ------- | ------------- | ------------ |
+| INVINCIBLE                       | TV Show | 17.1K         | 84.7%        |
+| Severance                        | TV Show | 12.2K         | 80.1%        |
+| Captain America: Brave New World | Movie   | 2.4K          | 69.5%        |
 
 ---
 
 ## 🤝 Contributing
-PRs welcome! Please use good contributing standards, I'm too lazy to make actual guidelines. 
 
+PRs welcome! Please use good contributing standards, I'm too lazy to make actual guidelines.

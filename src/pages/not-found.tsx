@@ -14,7 +14,7 @@ export default function NotFound() {
     "This page vanished into the void!",
     "Well, this is awkward...",
     "Are you sure this was the right way?",
-    "Nothing to see here... or is there?"
+    "Nothing to see here... or is there?",
   ];
 
   // Pick out a random message from the list above:
@@ -30,7 +30,8 @@ export default function NotFound() {
         <CardContent className="pt-6 flex flex-col items-center">
           <Unplug className="h-10 w-10 text-blue-500 mb-4" />
           <h1 className="text-2xl font-bold text-white">404 (Not Found):</h1>
-          <p className="text-gray-400 mt-2">{randomMessage}</p> {/* Specify the random message from the randomized variable. */}
+          <p className="text-gray-400 mt-2">{randomMessage}</p>{" "}
+          {/* Specify the random message from the randomized variable. */}
           <button
             type="button"
             className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-xl transition flex items-center gap-2 hover:bg-[#4A89F3]"

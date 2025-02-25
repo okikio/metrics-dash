@@ -81,7 +81,7 @@ export function parsePrometheusMetrics(text: string): ParsedMetrics {
 
   return {
     processMetrics: metrics.filter(
-      (m) => m.name?.startsWith("process_") ?? false
+      (m) => m.name?.startsWith("process_") ?? false,
     ),
     nodeMetrics: metrics.filter((m) => m.name?.startsWith("nodejs_") ?? false),
     httpMetrics: metrics.filter((m) => m.name?.startsWith("http_") ?? false),
