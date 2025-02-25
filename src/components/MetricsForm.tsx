@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -50,6 +48,7 @@ export function MetricsForm({
 }: MetricsFormProps) {
   const { toast } = useToast();
   const [localLoading, setLocalLoading] = useState(false);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,6 +56,34 @@ export function MetricsForm({
       url: currentUrl || "",
     },
   });
+
+  // Auto-refresh effect
+  useEffect(() => {
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+      refreshIntervalRef.current = null;
+    }
+
+    if (autoRefresh && form.getValues().url) {
+      const url = form.getValues().url;
+
+      if (formSchema.shape.url.safeParse(url).success) {
+        refreshIntervalRef.current = setInterval(() => {
+          if (!isLoading && !localLoading) {
+            handleSubmit(form.getValues());
+          }
+        }, 10000); // 10 seconds
+      }
+    }
+
+    // Cleanup interval on unmount or when dependencies change
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+    };
+  }, [autoRefresh, isLoading, localLoading, form.getValues().url]);
 
   const getRandomErrorTitle = () => {
     const randomIndex = Math.floor(Math.random() * errorTitles.length);
@@ -93,7 +120,7 @@ export function MetricsForm({
 
         if (!response.ok) {
           throw new Error(
-            `Failed to fetch "${url}" (Status: ${response.status})`,
+            `Failed to fetch "${url}" (Status: ${response.status})`
           );
         }
       }
@@ -103,7 +130,7 @@ export function MetricsForm({
       const contentType = response.headers.get("content-type");
       if (!contentType?.includes("text/plain")) {
         throw new Error(
-          `Invalid metrics endpoint: "${url}" does not return text/plain content`,
+          `Invalid metrics endpoint: "${url}" does not return text/plain content`
         );
       }
 
@@ -143,45 +170,46 @@ export function MetricsForm({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="flex flex-col gap-6 w-full max-w-md"
+          className="flex flex-col gap-6 w-full max-w-md lg:max-w-[1800px]"
         >
-          <FormField
-            control={form.control}
-            name="url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Metrics URL:</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="https://your-server/metrics"
-                    {...field}
-                    className="w-full rounded-xl"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <Button
-              type="submit"
-              disabled={isLoading || localLoading}
-              className="rounded-xl hover:bg-[#4A89F3]"
-            >
-              {localLoading ? "Fetching..." : "Fetch Metrics"}{" "}
-              {/* Change the text based on what's going on within the code. */}
-            </Button>
-            <Button
-              type="button"
-              variant={autoRefresh ? "secondary" : "outline"}
-              onClick={onAutoRefreshToggle}
-              className="gap-2 rounded-xl"
-              disabled={isLoading}
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${autoRefresh ? "animate-spin" : ""}`}
-              />
-              Auto-refresh
-            </Button>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:gap-4">
+            <FormField
+              control={form.control}
+              name="url"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>Metrics URL:</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="https://your-server/metrics"
+                      {...field}
+                      className="w-full rounded-xl"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-2 gap-4 mt-4 lg:mt-0 lg:flex lg:flex-shrink-0">
+              <Button
+                type="submit"
+                disabled={isLoading || localLoading}
+                className="rounded-xl hover:bg-[#4A89F3] lg:w-[150px]"
+              >
+                {localLoading ? "Fetching..." : "Fetch Metrics"}{" "}
+              </Button>
+              <Button
+                type="button"
+                variant={autoRefresh ? "secondary" : "outline"}
+                onClick={onAutoRefreshToggle}
+                className="gap-2 rounded-xl lg:w-[150px]"
+                disabled={isLoading}
+              >
+                <RefreshCw
+                  className={`h-4 w-4 ${autoRefresh ? "animate-spin" : ""}`}
+                />
+                Auto-refresh
+              </Button>
+            </div>
           </div>
         </form>
       </Form>
