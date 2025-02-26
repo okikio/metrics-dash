@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/table";
 import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { formatNumber } from "@/lib/metrics";
+import { useState } from "react";
+import { Input } from "../ui/input";
 
 interface HostStats {
   hostname: string;
@@ -24,6 +26,8 @@ interface HostnameStatsTableProps {
 }
 
 export function HostnameStatsTable({ metrics }: HostnameStatsTableProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+
   // Process the metrics to get hostname statistics
   const hostStats = metrics
     .filter((m) => m.name === "mw_provider_hostname_count")
@@ -42,8 +46,21 @@ export function HostnameStatsTable({ metrics }: HostnameStatsTableProps) {
     percentage: (stat.count / totalRequests) * 100,
   }));
 
+  // Convert to array and sort by total requests
+  const sortedStats = statsWithPercentage.filter((stat) =>
+    stat.hostname.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <CollapsibleCard title="Backend Usage by Domain">
+      <div className="mb-4">
+        <Input
+          placeholder="Search domains..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -54,7 +71,7 @@ export function HostnameStatsTable({ metrics }: HostnameStatsTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {statsWithPercentage.map((stat) => (
+            {sortedStats.map((stat) => (
               <TableRow key={stat.hostname}>
                 <TableCell className="font-medium">{stat.hostname}</TableCell>
                 <TableCell className="text-right">
