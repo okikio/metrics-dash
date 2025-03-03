@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table";
 import { CollapsibleCard } from "@/components/ui/collapsible-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { formatNumber } from "@/lib/metrics";
 import { Check, X } from "lucide-react";
 import {
@@ -16,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useState } from "react";
 
 interface MediaStats {
   title: string;
@@ -40,6 +42,8 @@ interface MediaWatchTableProps {
 }
 
 export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  
   // Process the metrics to get media statistics
   const mediaStats = metrics
     .filter((m) => m.name === "mw_media_watch_count")
@@ -105,10 +109,36 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
   // Convert to array and sort by total watch count
   const sortedStats = Object.values(mediaStats)
     .sort((a, b) => b.totalCount - a.totalCount)
-    .slice(0, 20); // Show top 20 most watched
+    .filter((stat) => {
+      if (!searchTerm) return true;
+      
+      const searchTermLower = searchTerm.toLowerCase();
+      
+      // Search by title
+      if (stat.title.toLowerCase().includes(searchTermLower)) {
+        return true;
+      }
+      
+      // Search by provider
+      return stat.attempts.some(attempt => {
+        const isSuccessful = (attempt.successCount || 0) > 0;
+        return isSuccessful && 
+          attempt.providerId.toLowerCase().includes(searchTermLower);
+      });
+    })
+    // Only limit results when not searching
+    .slice(0, searchTerm ? undefined : 20);
 
   return (
     <CollapsibleCard title="Most Watched Content">
+      <div className="mb-4">
+        <Input
+          placeholder="Search by title or provider..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -133,34 +163,42 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
                 <TableCell>
                   <div className="flex flex-wrap gap-2">
                     <TooltipProvider>
-                      {stat.attempts.map((attempt, idx) => (
-                        <Tooltip key={`${attempt.providerId}-${idx}`}>
-                          <TooltipTrigger>
-                            <span
-                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                                (attempt.successCount ?? 0) > 0
-                                  ? "bg-green-500/20 text-green-500"
-                                  : "bg-red-500/20 text-red-500"
-                              }`}
-                            >
-                              {attempt.providerId}
-                              {(attempt.successCount ?? 0) > 0 ? (
-                                <Check className="h-3 w-3" />
-                              ) : (
-                                <X className="h-3 w-3" />
-                              )}
-                              ({formatNumber(attempt.count)})
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-sm">
-                              Success: {formatNumber(attempt.successCount ?? 0)}
-                              <br />
-                              Failed: {formatNumber(attempt.failureCount ?? 0)}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      ))}
+                      {stat.attempts.map((attempt, idx) => {
+                        // Check if this provider matches the search term
+                        const isProviderMatch = searchTerm && 
+                          attempt.providerId.toLowerCase().includes(searchTerm.toLowerCase());
+                        
+                        return (
+                          <Tooltip key={`${attempt.providerId}-${idx}`}>
+                            <TooltipTrigger>
+                              <span
+                                className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
+                                  isProviderMatch 
+                                    ? "bg-blue-500/20 text-blue-500 font-semibold" 
+                                    : (attempt.successCount ?? 0) > 0
+                                      ? "bg-green-500/20 text-green-500"
+                                      : "bg-red-500/20 text-red-500"
+                                }`}
+                              >
+                                {attempt.providerId}
+                                {(attempt.successCount ?? 0) > 0 ? (
+                                  <Check className="h-3 w-3" />
+                                ) : (
+                                  <X className="h-3 w-3" />
+                                )}
+                                ({formatNumber(attempt.count)})
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-sm">
+                                Success: {formatNumber(attempt.successCount ?? 0)}
+                                <br />
+                                Failed: {formatNumber(attempt.failureCount ?? 0)}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      })}
                     </TooltipProvider>
                   </div>
                 </TableCell>
