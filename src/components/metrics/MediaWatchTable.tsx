@@ -43,6 +43,7 @@ interface MediaWatchTableProps {
 
 export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   
   // Process the metrics to get media statistics
   const mediaStats = metrics
@@ -110,34 +111,54 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
   const sortedStats = Object.values(mediaStats)
     .sort((a, b) => b.totalCount - a.totalCount)
     .filter((stat) => {
-      if (!searchTerm) return true;
-      
-      const searchTermLower = searchTerm.toLowerCase();
-      
-      // Search by title
-      if (stat.title.toLowerCase().includes(searchTermLower)) {
-        return true;
+      // Title search
+      if (searchTerm && !stat.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
       }
       
-      // Search by provider
-      return stat.attempts.some(attempt => {
-        const isSuccessful = (attempt.successCount || 0) > 0;
-        return isSuccessful && 
-          attempt.providerId.toLowerCase().includes(searchTermLower);
-      });
+      // Provider filter
+      if (selectedProvider) {
+        return stat.attempts.some(attempt => 
+          attempt.providerId === selectedProvider && 
+          (attempt.successCount || 0) > 0
+        );
+      }
+      
+      return true;
     })
-    // Only limit results when not searching
-    .slice(0, searchTerm ? undefined : 20);
+    // Only limit results when not filtering
+    .slice(0, (!searchTerm && !selectedProvider) ? 20 : undefined);
+
+  const handleProviderClick = (providerId: string) => {
+    if (selectedProvider === providerId) {
+      // If clicking the already selected provider, clear the filter
+      setSelectedProvider(null);
+    } else {
+      // Otherwise, set this provider as the filter
+      setSelectedProvider(providerId);
+    }
+  };
 
   return (
     <CollapsibleCard title="Most Watched Content">
-      <div className="mb-4">
+      <div className="mb-4 flex gap-4 items-center">
         <Input
-          placeholder="Search by title or provider..."
+          placeholder="Search by title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
+        {selectedProvider && (
+          <div className="text-sm">
+            Filtering for provider successes: 
+            <span 
+              className="ml-2 px-2 py-1 bg-blue-500/20 text-blue-500 font-semibold rounded-full cursor-pointer"
+              onClick={() => setSelectedProvider(null)}
+            >
+              {selectedProvider} ×
+            </span>
+          </div>
+        )}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -164,21 +185,20 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
                   <div className="flex flex-wrap gap-2">
                     <TooltipProvider>
                       {stat.attempts.map((attempt, idx) => {
-                        // Check if this provider matches the search term
-                        const isProviderMatch = searchTerm && 
-                          attempt.providerId.toLowerCase().includes(searchTerm.toLowerCase());
+                        const isSelected = selectedProvider === attempt.providerId;
                         
                         return (
                           <Tooltip key={`${attempt.providerId}-${idx}`}>
-                            <TooltipTrigger>
+                            <TooltipTrigger asChild>
                               <span
-                                className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                                  isProviderMatch 
+                                className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs cursor-pointer ${
+                                  isSelected 
                                     ? "bg-blue-500/20 text-blue-500 font-semibold" 
                                     : (attempt.successCount ?? 0) > 0
                                       ? "bg-green-500/20 text-green-500"
                                       : "bg-red-500/20 text-red-500"
                                 }`}
+                                onClick={() => handleProviderClick(attempt.providerId)}
                               >
                                 {attempt.providerId}
                                 {(attempt.successCount ?? 0) > 0 ? (
