@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { MetricsForm } from "@/components/MetricsForm";
 import { parsePrometheusMetrics } from "@/lib/metrics";
@@ -16,17 +16,57 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Spinner from "@/components/ui/spinner";
 import { GitHubButton } from "@/components/ui/GitHubButton";
 
+interface MetricValue {
+  name: string;
+  value: number;
+  labels?: Record<string, string>;
+  help?: string;
+  type?: string;
+}
+
+interface ParsedMetrics {
+  processMetrics: MetricValue[];
+  nodeMetrics: MetricValue[];
+  httpMetrics: MetricValue[];
+  customMetrics: MetricValue[];
+}
+
+interface ProviderStats {
+  [key: string]: {
+    success: number;
+    failed: number;
+    notfound: number;
+  };
+}
+
+interface RouteTimings {
+  [key: string]: {
+    sum: number;
+    count: number;
+  };
+}
+
 export default function Dashboard() {
   const [url, setUrl] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [rawResponse, setRawResponse] = useState<string | null>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<ParsedMetrics, Error>({
     queryKey: ["metrics", url],
     enabled: !!url,
     queryFn: async () => {
       if (!url) throw new Error("No URL provided");
+      if (url === "imported") {
+        // Return the already parsed data for imported files
+        return queryClient.getQueryData<ParsedMetrics>(["metrics", "imported"]) ?? {
+          processMetrics: [],
+          nodeMetrics: [],
+          httpMetrics: [],
+          customMetrics: [],
+        };
+      }
       try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -69,14 +109,30 @@ export default function Dashboard() {
     setUrl(newUrl);
   };
 
+  const handleFileImport = (content: string) => {
+    setRawResponse(content);
+    try {
+      const parsed = parsePrometheusMetrics(content);
+      // Update the query client cache manually
+      queryClient.setQueryData(["metrics", "imported"], parsed);
+      setUrl("imported"); // Set a dummy URL to trigger the UI update
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Error parsing file",
+        description: err instanceof Error ? err.message : "Failed to parse metrics file",
+      });
+    }
+  };
+
   const chartData = useMemo(() => {
     if (!data) return null;
 
     // Group provider status data by provider
     const providerStats = data.customMetrics
-      .filter((m) => m.name === "mw_provider_status_count")
+      .filter((m: MetricValue) => m.name === "mw_provider_status_count")
       .reduce(
-        (acc, curr) => {
+        (acc: ProviderStats, curr: MetricValue) => {
           const providerId = curr.labels?.provider_id || "unknown";
           const status = curr.labels?.status || "unknown";
           if (!acc[providerId]) {
@@ -91,15 +147,12 @@ export default function Dashboard() {
           }
           return acc;
         },
-        {} as Record<
-          string,
-          { success: number; failed: number; notfound: number }
-        >,
+        {} as ProviderStats,
       );
 
     // Calculate failure rates and sort providers
     const providerFailureRates10 = Object.entries(providerStats)
-      .map(([provider, stats]) => {
+      .map(([provider, stats]: [string, { success: number; failed: number; notfound: number }]) => {
         const total = stats.success + stats.failed + stats.notfound;
         const failureRate = (stats.failed / total) * 100;
         return { provider, failureRate, ...stats };
@@ -108,7 +161,7 @@ export default function Dashboard() {
       .slice(0, 10);
 
     const providerFailureRates20 = Object.entries(providerStats)
-      .map(([provider, stats]) => {
+      .map(([provider, stats]: [string, { success: number; failed: number; notfound: number }]) => {
         const total = stats.success + stats.failed + stats.notfound;
         const failureRate = (stats.failed / total) * 100;
         return { provider, failureRate, ...stats };
@@ -118,16 +171,16 @@ export default function Dashboard() {
 
     const providerToolData = {
       labels: data.customMetrics
-        .filter((m) => m.name === "mw_provider_tool_count")
+        .filter((m: MetricValue) => m.name === "mw_provider_tool_count")
         .slice(0, 10)
-        .map((m) => m.labels?.tool || "unknown"),
+        .map((m: MetricValue) => m.labels?.tool || "unknown"),
       datasets: [
         {
           label: "Provider Tool Usage",
           data: data.customMetrics
-            .filter((m) => m.name === "mw_provider_tool_count")
+            .filter((m: MetricValue) => m.name === "mw_provider_tool_count")
             .slice(0, 10)
-            .map((m) => m.value),
+            .map((m: MetricValue) => m.value),
           backgroundColor: [
             "rgba(54, 162, 235, 0.8)",
             "rgba(75, 192, 192, 0.8)",
@@ -139,16 +192,16 @@ export default function Dashboard() {
 
     const httpDurationData = {
       labels: data.httpMetrics
-        .filter((m) => m.name === "http_request_duration_seconds_count")
+        .filter((m: MetricValue) => m.name === "http_request_duration_seconds_count")
         .slice(0, 10)
-        .map((m) => `${m.labels?.method || ""} ${m.labels?.route || ""}`),
+        .map((m: MetricValue) => `${m.labels?.method || ""} ${m.labels?.route || ""}`),
       datasets: [
         {
           label: "Request Count",
           data: data.httpMetrics
-            .filter((m) => m.name === "http_request_duration_seconds_count")
+            .filter((m: MetricValue) => m.name === "http_request_duration_seconds_count")
             .slice(0, 10)
-            .map((m) => m.value),
+            .map((m: MetricValue) => m.value),
           backgroundColor: ["rgba(54, 162, 235, 0.8)"],
         },
       ],
@@ -162,25 +215,25 @@ export default function Dashboard() {
           data: [
             data.customMetrics
               .filter(
-                (m) =>
+                (m: MetricValue) =>
                   m.name === "mw_provider_status_count" &&
                   m.labels?.status === "success",
               )
-              .reduce((acc, curr) => acc + curr.value, 0),
+              .reduce((acc: number, curr: MetricValue) => acc + (typeof curr.value === "number" ? curr.value : 0), 0),
             data.customMetrics
               .filter(
-                (m) =>
+                (m: MetricValue) =>
                   m.name === "mw_provider_status_count" &&
                   m.labels?.status === "failed",
               )
-              .reduce((acc, curr) => acc + curr.value, 0),
+              .reduce((acc: number, curr: MetricValue) => acc + (typeof curr.value === "number" ? curr.value : 0), 0),
             data.customMetrics
               .filter(
-                (m) =>
+                (m: MetricValue) =>
                   m.name === "mw_provider_status_count" &&
                   m.labels?.status === "notfound",
               )
-              .reduce((acc, curr) => acc + curr.value, 0),
+              .reduce((acc: number, curr: MetricValue) => acc + (typeof curr.value === "number" ? curr.value : 0), 0),
           ],
           borderColor: "rgba(53, 162, 235, 1)",
           backgroundColor: [
@@ -225,9 +278,9 @@ export default function Dashboard() {
 
     // Calculate average response times by route
     const routeTimings = data.httpMetrics
-      .filter((m) => m.name.startsWith("http_request_duration_seconds"))
+      .filter((m: MetricValue) => m.name.startsWith("http_request_duration_seconds"))
       .reduce(
-        (acc, curr) => {
+        (acc: RouteTimings, curr: MetricValue) => {
           const route = curr.labels?.route;
           const method = curr.labels?.method;
           if (!route || !method) return acc;
@@ -248,15 +301,15 @@ export default function Dashboard() {
 
           return acc;
         },
-        {} as Record<string, { sum: number; count: number }>,
+        {} as RouteTimings,
       );
 
     // Convert to averages and sort by response time
     const responseTimeData = {
       labels: Object.entries(routeTimings)
-        .map(([route, { sum, count }]) => ({
+        .map(([route, timing]: [string, { sum: number; count: number }]) => ({
           route,
-          avgTime: (sum / count) * 1000, // Convert to milliseconds
+          avgTime: (timing.sum / timing.count) * 1000,
         }))
         .sort((a, b) => b.avgTime - a.avgTime)
         .slice(0, 10)
@@ -265,7 +318,9 @@ export default function Dashboard() {
         {
           label: "Average Response Time (ms)",
           data: Object.entries(routeTimings)
-            .map(([_, { sum, count }]) => (sum / count) * 1000)
+            .map(([_, timing]: [string, { sum: number; count: number }]) => 
+              (timing.sum / timing.count) * 1000
+            )
             .sort((a, b) => b - a)
             .slice(0, 10),
           backgroundColor: ["rgba(234, 179, 8, 0.8)"],
@@ -287,25 +342,25 @@ export default function Dashboard() {
     if (!data) return null;
 
     const totalWatchRequests = data.customMetrics
-      .filter((m) => m.name === "mw_media_watch_count")
+      .filter((m: MetricValue) => m.name === "mw_media_watch_count")
       .reduce(
-        (acc, curr) => acc + (typeof curr.value === "number" ? curr.value : 0),
+        (acc: number, curr: MetricValue) => acc + (typeof curr.value === "number" ? curr.value : 0),
         0,
       );
 
     const uniqueHosts = new Set(
       data.customMetrics
-        .filter((m) => m.name === "mw_provider_hostname_count")
-        .map((m) => m.labels?.hostname),
+        .filter((m: MetricValue) => m.name === "mw_provider_hostname_count")
+        .map((m: MetricValue) => m.labels?.hostname),
     ).size;
 
     return {
       totalWatchRequests,
       uniqueHosts,
       activeUsers:
-        data.customMetrics.find((m) => m.name === "mw_user_count")?.value || 0,
+        data.customMetrics.find((m: MetricValue) => m.name === "mw_user_count")?.value || 0,
       eventLoopLag: (
-        data.nodeMetrics.find((m) => m.name === "nodejs_eventloop_lag_seconds")
+        data.nodeMetrics.find((m: MetricValue) => m.name === "nodejs_eventloop_lag_seconds")
           ?.value || 0
       ).toFixed(3),
     };
@@ -335,6 +390,7 @@ export default function Dashboard() {
         </div>
         <MetricsForm
           onSubmit={handleSubmit}
+          onFileImport={handleFileImport}
           isLoading={isLoading}
           autoRefresh={autoRefresh}
           onAutoRefreshToggle={() => setAutoRefresh(!autoRefresh)}

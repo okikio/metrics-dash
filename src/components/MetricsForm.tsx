@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
@@ -33,6 +33,7 @@ const errorTitles = [
 
 interface MetricsFormProps {
   onSubmit: (url: string) => void;
+  onFileImport: (content: string) => void;
   isLoading: boolean;
   autoRefresh: boolean;
   onAutoRefreshToggle: () => void;
@@ -41,6 +42,7 @@ interface MetricsFormProps {
 
 export function MetricsForm({
   onSubmit,
+  onFileImport,
   isLoading,
   autoRefresh,
   onAutoRefreshToggle,
@@ -165,6 +167,20 @@ export function MetricsForm({
     setLocalLoading(false); // Resets the loading state after request.
   };
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      onFileImport(content);
+      // Reset the file input
+      event.target.value = '';
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <div className="flex items-center justify-center p-4">
       <Form {...form}>
@@ -181,7 +197,7 @@ export function MetricsForm({
                   <FormLabel>Metrics URL:</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="https://your-server/metrics"
+                      placeholder="https://your-server/metrics or import a file"
                       {...field}
                       className="w-full rounded-xl"
                     />
@@ -189,13 +205,13 @@ export function MetricsForm({
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-2 gap-4 mt-4 lg:mt-0 lg:flex lg:flex-shrink-0">
+            <div className="grid grid-cols-3 gap-4 mt-4 lg:mt-0 lg:flex lg:flex-shrink-0">
               <Button
                 type="submit"
                 disabled={isLoading || localLoading}
                 className="rounded-xl hover:bg-[#4A89F3] lg:w-[150px]"
               >
-                {localLoading ? "Fetching..." : "Fetch Metrics"}{" "}
+                {localLoading ? "Fetching..." : "Fetch Metrics"}
               </Button>
               <Button
                 type="button"
@@ -209,6 +225,24 @@ export function MetricsForm({
                 />
                 Auto-refresh
               </Button>
+              <div className="relative">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="gap-2 rounded-xl lg:w-[150px] w-full"
+                  onClick={() => document.getElementById('file-upload')?.click()}
+                >
+                  <Upload className="h-4 w-4" />
+                  Import File
+                </Button>
+                <input
+                  type="file"
+                  id="file-upload"
+                  accept=".txt"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+              </div>
             </div>
           </div>
         </form>
