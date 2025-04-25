@@ -205,7 +205,7 @@ export function MetricsForm({
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-3 gap-4 mt-4 lg:mt-0 lg:flex lg:flex-shrink-0">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 lg:mt-0 lg:flex lg:flex-shrink-0">
               <Button
                 type="submit"
                 disabled={isLoading || localLoading}
@@ -225,7 +225,7 @@ export function MetricsForm({
                 />
                 Auto-refresh
               </Button>
-              <div className="relative">
+              <div className="relative hidden md:block">
                 <Button
                   type="button"
                   variant="outline"
