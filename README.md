@@ -3,7 +3,7 @@
 A lightweight, user-friendly dashboard to visualize metrics from your movie-web backend instance without needing Prometheus/Grafana. Simply enter your metrics endpoint and get actionable insights!
 
 **Backend Documentation**:
-For information about setting up a backend check the [docs here.](https://docs.undi.rest/backend/introduction)
+For information about setting up a backend check the [docs here.](https://docs.pstream.mov/backend/introduction)
 
 ---
 
@@ -32,7 +32,7 @@ For information about setting up a backend check the [docs here.](https://docs.u
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Pasithea0/mw-metrics-dash.git
+   git clone https://github.com/p-stream/metrics-dash.git
    ```
 2. **Install dependencies**
    ```bash
