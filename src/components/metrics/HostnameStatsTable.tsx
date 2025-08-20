@@ -30,7 +30,13 @@ export function HostnameStatsTable({ metrics }: HostnameStatsTableProps) {
 
   // Process the metrics to get hostname statistics
   const hostStats = metrics
-    .filter((m) => m.name === "mw_provider_hostname_count")
+    .filter(
+      (m) =>
+        m.name === "mw_provider_hostname_count" ||
+        m.name === "mw_provider_hostname_count_daily" ||
+        m.name === "mw_provider_hostname_count_weekly" ||
+        m.name === "mw_provider_hostname_count_monthly",
+    )
     .map((m) => ({
       hostname: m.labels?.hostname || "unknown",
       count: m.value,

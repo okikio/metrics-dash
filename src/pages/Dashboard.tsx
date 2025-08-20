@@ -130,7 +130,13 @@ export default function Dashboard() {
 
     // Group provider status data by provider
     const providerStats = data.customMetrics
-      .filter((m: MetricValue) => m.name === "mw_provider_status_count")
+      .filter(
+        (m: MetricValue) =>
+          m.name === "mw_provider_status_count" ||
+          m.name === "mw_provider_status_count_daily" ||
+          m.name === "mw_provider_status_count_weekly" ||
+          m.name === "mw_provider_status_count_monthly",
+      )
       .reduce(
         (acc: ProviderStats, curr: MetricValue) => {
           const providerId = curr.labels?.provider_id || "unknown";
@@ -216,21 +222,30 @@ export default function Dashboard() {
             data.customMetrics
               .filter(
                 (m: MetricValue) =>
-                  m.name === "mw_provider_status_count" &&
+                  (m.name === "mw_provider_status_count" ||
+                    m.name === "mw_provider_status_count_daily" ||
+                    m.name === "mw_provider_status_count_weekly" ||
+                    m.name === "mw_provider_status_count_monthly") &&
                   m.labels?.status === "success",
               )
               .reduce((acc: number, curr: MetricValue) => acc + (typeof curr.value === "number" ? curr.value : 0), 0),
             data.customMetrics
               .filter(
                 (m: MetricValue) =>
-                  m.name === "mw_provider_status_count" &&
+                  (m.name === "mw_provider_status_count" ||
+                    m.name === "mw_provider_status_count_daily" ||
+                    m.name === "mw_provider_status_count_weekly" ||
+                    m.name === "mw_provider_status_count_monthly") &&
                   m.labels?.status === "failed",
               )
               .reduce((acc: number, curr: MetricValue) => acc + (typeof curr.value === "number" ? curr.value : 0), 0),
             data.customMetrics
               .filter(
                 (m: MetricValue) =>
-                  m.name === "mw_provider_status_count" &&
+                  (m.name === "mw_provider_status_count" ||
+                    m.name === "mw_provider_status_count_daily" ||
+                    m.name === "mw_provider_status_count_weekly" ||
+                    m.name === "mw_provider_status_count_monthly") &&
                   m.labels?.status === "notfound",
               )
               .reduce((acc: number, curr: MetricValue) => acc + (typeof curr.value === "number" ? curr.value : 0), 0),
@@ -342,7 +357,13 @@ export default function Dashboard() {
     if (!data) return null;
 
     const totalWatchRequests = data.customMetrics
-      .filter((m: MetricValue) => m.name === "mw_media_watch_count")
+      .filter(
+        (m: MetricValue) =>
+          m.name === "mw_media_watch_count" ||
+          m.name === "mw_media_watch_count_daily" ||
+          m.name === "mw_media_watch_count_weekly" ||
+          m.name === "mw_media_watch_count_monthly",
+      )
       .reduce(
         (acc: number, curr: MetricValue) => acc + (typeof curr.value === "number" ? curr.value : 0),
         0,
@@ -350,7 +371,13 @@ export default function Dashboard() {
 
     const uniqueHosts = new Set(
       data.customMetrics
-        .filter((m: MetricValue) => m.name === "mw_provider_hostname_count")
+        .filter(
+          (m: MetricValue) =>
+            m.name === "mw_provider_hostname_count" ||
+            m.name === "mw_provider_hostname_count_daily" ||
+            m.name === "mw_provider_hostname_count_weekly" ||
+            m.name === "mw_provider_hostname_count_monthly",
+        )
         .map((m: MetricValue) => m.labels?.hostname),
     ).size;
 
@@ -358,7 +385,13 @@ export default function Dashboard() {
       totalWatchRequests,
       uniqueHosts,
       activeUsers:
-        data.customMetrics.find((m: MetricValue) => m.name === "mw_user_count")?.value || 0,
+        data.customMetrics.find(
+          (m: MetricValue) =>
+            m.name === "mw_user_count" ||
+            m.name === "mw_user_count_daily" ||
+            m.name === "mw_user_count_weekly" ||
+            m.name === "mw_user_count_monthly",
+        )?.value || 0,
       eventLoopLag: (
         data.nodeMetrics.find((m: MetricValue) => m.name === "nodejs_eventloop_lag_seconds")
           ?.value || 0

@@ -47,7 +47,13 @@ export function MediaWatchTable({ metrics }: MediaWatchTableProps) {
   
   // Process the metrics to get media statistics
   const mediaStats = metrics
-    .filter((m) => m.name === "mw_media_watch_count")
+    .filter(
+      (m) =>
+        m.name === "mw_media_watch_count" ||
+        m.name === "mw_media_watch_count_daily" ||
+        m.name === "mw_media_watch_count_weekly" ||
+        m.name === "mw_media_watch_count_monthly",
+    )
     .reduce(
       (acc, curr) => {
         const title = curr.labels?.title || "Unknown";

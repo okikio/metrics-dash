@@ -33,7 +33,13 @@ export function ProviderStatusTable({ metrics }: ProviderStatusTableProps) {
 
   // Process the metrics to get provider statistics
   const providerStats = metrics
-    .filter((m) => m.name === "mw_provider_status_count")
+    .filter(
+      (m) =>
+        m.name === "mw_provider_status_count" ||
+        m.name === "mw_provider_status_count_daily" ||
+        m.name === "mw_provider_status_count_weekly" ||
+        m.name === "mw_provider_status_count_monthly",
+    )
     .reduce(
       (acc, curr) => {
         const providerId = curr.labels?.provider_id || "unknown";
