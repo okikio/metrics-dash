@@ -102,5 +102,6 @@
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.9"
-  }
+  },
+  "packageManager": "pnpm@10.18.3"
 }
